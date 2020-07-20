@@ -13,7 +13,6 @@ class Subscribe:
         self.log = login
         self.passwd = passw
 
-
     def find_element(self, element):
         try:
             self.browser.find_element_by_xpath(element)
@@ -28,9 +27,10 @@ class Subscribe:
 
     def login(self):
         self.browser = webdriver.Chrome("D:\Programming\instagram\chromedriver.exe")
+        time.sleep(2)
         self.browser.get("https://www.instagram.com/")
         self.browser.get("https://www.instagram.com/accounts/login/")
-        time.sleep(5)
+        time.sleep(3)
         self.browser.find_element_by_xpath(
             '//*[@id="react-root"]/section/main/div/article/div/div[1]/div/form/div[2]/div/label/input').send_keys(
             self.log)
@@ -54,7 +54,6 @@ class Subscribe:
         send_message = '//*[@id="react-root"]/section/main/div/header/section/div[1]/div[1]/div/button'
         post = '//*[@id="react-root"]/section/main/div/header/section/ul/li[1]/span/span'
         no_person = '//*[@id="react-root"]/section/main/div/p'
-
         # posts1 = '//*[@id="react-root"]/section/main/div/div[4]/article/div[1]/div[2]/div[1]/div'
         # posts2 = '//*[@id="react-root"]/section/main/div/div[3]/article/div[1]/div[2]/div[1]/div'
         count_pers = 0
@@ -132,10 +131,11 @@ class Subscribe:
     def subs(self):
         self.counter = 0
         self.file = open(self.log + '.txt', 'r')
+
         for person in self.file:
             self.counter += 1
             self.browser.get(person)
-            time.sleep(4)
+            time.sleep(5)
             stor = '//*[@id="react-root"]/section/main/div/div[3]'
             if self.find_element(stor) == 1:
                 self.browser.find_element_by_xpath(
@@ -157,10 +157,10 @@ class Subscribe:
                 # time.sleep(3600)
 
 
-
-yourzayka = Subscribe(10, 'D:\Programming\instagram\\1234', '__yourzayka', '55555dan')
+yourzayka = Subscribe(5, 'D:\Programming\instagram\subs\\anime.txt', '__yourzayka', '55555dan')
 yourzayka.login()
 yourzayka.read_from_file()
 yourzayka.filter_person()
 yourzayka.write_filtered()
+
 yourzayka.subs()
