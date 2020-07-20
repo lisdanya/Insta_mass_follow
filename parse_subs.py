@@ -1,68 +1,69 @@
 from selenium import webdriver
 import time
-from config import *
 
 
-browser = webdriver.Chrome("D:\Programming\instagram\chromedriver.exe")
-browser.get("https://www.instagram.com/")
-browser.get("https://www.instagram.com/accounts/login/")
-time.sleep(3)
-browser.find_element_by_xpath(
-    '//*[@id="react-root"]/section/main/div/article/div/div[1]/div/form/div[2]/div/label/input').send_keys(
-    LOGIN)
-browser.find_element_by_xpath(
-    '//*[@id="react-root"]/section/main/div/article/div/div[1]/div/form/div[3]/div/label/input').send_keys(
-    PASS)
-browser.find_element_by_xpath(
-    '//*[@id="react-root"]/section/main/div/article/div/div[1]/div/form/div[4]').click()
-time.sleep(3)
-browser.get('https://www.instagram.com/anime_public10/')
-time.sleep(3)
-browser.find_element_by_xpath(
-    '//*[@id="react-root"]/section/main/div/header/section/ul/li[2]/a').click()
-time.sleep(5)
-element = browser.find_element_by_xpath('/html/body/div[4]/div/div/div[2]')
-browser.execute_script(f"arguments[0].scrollTop = arguments[0].scrollHeight/{6}", element)
-time.sleep(0.8)
-browser.execute_script(f"arguments[0].scrollTop = arguments[0].scrollHeight/{4}", element)
-time.sleep(0.8)
-browser.execute_script(f"arguments[0].scrollTop = arguments[0].scrollHeight/{3}", element)
-time.sleep(0.8)
-browser.execute_script(f"arguments[0].scrollTop = arguments[0].scrollHeight/{2}", element)
-time.sleep(0.8)
-pers = []
-t = 0.7
-num_scrol = 0
-count = 70
-for i in range(count // 10):
-    print(i)
-    browser.execute_script("arguments[0].scrollTop = arguments[0].scrollHeight", element)
-    # persons=browser.find_elements_by_xpath("//*[@id="f92aa7e9228218"]/div/div/a")
-    # // *[ @ id = "f108c0b1fb9c588"] / div / div / a
-    # // *[ @ id = "f34171513039be8"] / div / div / a
-    time.sleep(t)
-for k in range(count):
-    persons = browser.find_elements_by_xpath(
-        "/html/body/div[4]/div/div/div[2]/ul/div/li[{}]/div/div[1]/div[2]/div[1]/a".format(k))
-    for j in range(len(persons)):
-        pers.append(str(persons[j].get_attribute('href')))
-    time.sleep(t)
-# for person in pers:
-# browser.get(person)
-# time.sleep(5)
-# browser.find_element_by_xpath(
-#     '//*[@id="react-root"]/section/main/div/header/section/div[2]/div/span/span[1]/button').click()
-# time.sleep(1)
-file = open("anime_public100.txt", "w")
-for person in pers:
-    file.write(person)
-    file.write("\n")
-file.close()
+class Parse:
+    def __init__(self, LOGIN, PASS, quantity):
+        self.browser = webdriver.Chrome("D:\Programming\instagram\chromedriver.exe")
+        self.pers = []
+        self.LOGIN = LOGIN
+        self.PASS = PASS
+        self.quantity = quantity
 
-# def main():
-#     login(PASS, LOGIN)
-#
-#
-#
-# if __name__=='__main__':
-#     main()
+    def logging(self):
+
+        self.browser.get("https://www.instagram.com/")
+        self.browser.get("https://www.instagram.com/accounts/login/")
+        time.sleep(3)
+        self.browser.find_element_by_xpath(
+            '//*[@id="react-root"]/section/main/div/article/div/div[1]/div/form/div[2]/div/label/input').send_keys(
+            self.LOGIN)
+        self.browser.find_element_by_xpath(
+            '//*[@id="react-root"]/section/main/div/article/div/div[1]/div/form/div[3]/div/label/input').send_keys(
+            self.PASS)
+        self.browser.find_element_by_xpath(
+            '//*[@id="react-root"]/section/main/div/article/div/div[1]/div/form/div[4]').click()
+        time.sleep(3)
+
+    def scroll_prep(self):
+        self.browser.get('https://www.instagram.com/{}/'.format(self.LOGIN))
+        time.sleep(3)
+        self.browser.find_element_by_xpath(
+            '//*[@id="react-root"]/section/main/div/header/section/ul/li[2]/a').click()
+        time.sleep(5)
+        self.element = self.browser.find_element_by_xpath('/html/body/div[4]/div/div/div[2]')
+        self.browser.execute_script(f"arguments[0].scrollTop = arguments[0].scrollHeight/{6}", self.element)
+        time.sleep(0.8)
+        self.browser.execute_script(f"arguments[0].scrollTop = arguments[0].scrollHeight/{4}", self.element)
+        time.sleep(0.8)
+        self.browser.execute_script(f"arguments[0].scrollTop = arguments[0].scrollHeight/{3}", self.element)
+        time.sleep(0.8)
+        self.browser.execute_script(f"arguments[0].scrollTop = arguments[0].scrollHeight/{2}", self.element)
+        time.sleep(0.8)
+
+    def scroll(self):
+        t = 0.7
+        for i in range(self.quantity // 10):
+            print(i)
+            self.browser.execute_script("arguments[0].scrollTop = arguments[0].scrollHeight", self.element)
+            time.sleep(t)
+        for k in range(self.quantity):
+            persons = self.browser.find_elements_by_xpath(
+                "/html/body/div[4]/div/div/div[2]/ul/div/li[{}]/div/div[1]/div[2]/div[1]/a".format(k))
+            for j in range(len(persons)):
+                self.pers.append(str(persons[j].get_attribute('href')))
+            time.sleep(t)
+
+    def write_file(self):
+        file = open("anime_public100.txt", "w")
+        for person in self.pers:
+            file.write(person)
+            file.write("\n")
+        file.close()
+
+
+data = Parse("_._.b.l.a.n.k.__", "55555dan", 70)
+data.logging()
+data.scroll_prep()
+data.scroll()
+data.write_file()
