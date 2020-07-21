@@ -63,16 +63,16 @@ class Parse:
                 self.pers.append(str(self.persons[j].get_attribute('href')))
 
     def writing(self):
-        file = open("D:\Programming\instagram\unsub\{}_unfollow.txt".format(self.log), "w")
+        file = open(r"D:\Programming\instagram\unsub\{}_unfollow.txt".format(self.log), "w")
         for person in self.pers:
             file.write(person)
             file.write("\n")
         file.close()
+        self.browser.close()
         print('/\/\/\/\/\/\/\/\\')
 
 
-yourzayka = Parse('__yourzayka', '55555dan', 100)
-
+yourzayka = Parse('_._.b.l.a.n.k.__', '55555dan', 100)
 yourzayka.login()
 yourzayka.scroll_prep()
 yourzayka.scroll()

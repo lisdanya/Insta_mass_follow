@@ -9,9 +9,11 @@ class Subscribe:
 
     def __init__(self, limit_hour, file_sub, login, passw):
         self.lim = limit_hour
-        self.file = file_sub
+        self.file_parse = file_sub
         self.log = login
         self.passwd = passw
+        self.counter = 0
+        self.persons = []
 
     def find_element(self, element):
         try:
@@ -42,8 +44,7 @@ class Subscribe:
         time.sleep(3)
 
     def read_from_file(self):
-        file = open(self.file, 'r')
-        self.persons = []
+        file = open(self.file_parse, 'r')
         for pers in file:
             self.persons.append(pers)
         return self.persons
@@ -54,33 +55,28 @@ class Subscribe:
         send_message = '//*[@id="react-root"]/section/main/div/header/section/div[1]/div[1]/div/button'
         post = '//*[@id="react-root"]/section/main/div/header/section/ul/li[1]/span/span'
         no_person = '//*[@id="react-root"]/section/main/div/p'
-        # posts1 = '//*[@id="react-root"]/section/main/div/div[4]/article/div[1]/div[2]/div[1]/div'
-        # posts2 = '//*[@id="react-root"]/section/main/div/div[3]/article/div[1]/div[2]/div[1]/div'
         count_pers = 0
         filtered = 0
-        self.filtered_persons = []
         for person in self.persons:
             count_pers += 1
             self.browser.get(person)
             time.sleep(1)
             if self.find_element(no_person) == 1:
                 print(str(count_pers) + ") Not available")
-                # try:
-                #     if self.browser.find_element_by_xpath(no_person).text== "The link you followed may be broken, or the page may have been removed. ":
-                #         print(str(count_pers) + ") Not available")
-                # except NoSuchElementException:
-                #     print("/\/\/\/ Error : 1 /\/\/\/")
+                self.del_subed()
                 continue
             posts = self.browser.find_element_by_xpath(post).text
             posts = re.sub(r'\s', '', posts)
             if int(posts) == 0:
                 print(str(count_pers) + ") No posts")
+                self.del_subed()
                 continue
             if self.find_element(privat) == 1:
                 try:
                     if self.browser.find_element_by_xpath(
                             privat).text == "This Account is Private" or "Это закрытый аккаунт":
                         print(str(count_pers) + ") Private")
+                        self.del_subed()
                         continue
                 except StaleElementReferenceException:
                     print("/\/\/\/ Error : 1 /\/\/\/")
@@ -91,22 +87,22 @@ class Subscribe:
                         print(str(count_pers) + ") Subscribed")
                 except StaleElementReferenceException:
                     print("/\/\/\/ Error : 1 /\/\/\/")
+                self.del_subed()
                 continue
             else:
                 filtered += 1
-                self.filtered_persons.append(person)
+                self.subs()
+                self.del_subed()
                 print(str(count_pers) + ") Added  " + str(filtered))
-                
             if filtered == self.lim * 24:
                 break
-        return self.filtered_persons
 
-    def write_filtered(self):
-        self.file = open(self.log + '.txt', 'w')
-        for i in self.filtered_persons:
-            self.file.write(i)
-            # self.file.write("\n")
-        # self.file.close()
+    # def write_filtered(self):
+    #     self.file = open(self.log + '.txt', 'w')
+    #     for i in self.filtered_persons:
+    #         self.file.write(i)
+    #         # self.file.write("\n")
+    #     # self.file.close()
 
     def del_subed(self):
         # cou = 0
@@ -115,13 +111,13 @@ class Subscribe:
         #     line==''
         #     if cou == self.counter:
         #         break
-        self.file = open(self.log + '.txt', 'r')
+        self.file = open(self.file_parse, 'r')
         temp = []
         for line in self.file:
             temp.append(line)
         self.file.close()
         count = 0
-        self.file = open(self.log + '.txt', 'w')
+        self.file = open(self.file_parse, 'w')
         for url in temp:
             count += 1
             if count > 1:
@@ -129,39 +125,32 @@ class Subscribe:
         self.file.close()
 
     def subs(self):
-        while True:
-            self.counter = 0
-            self.file = open(self.log + '.txt', 'r')
-            for person in self.file:
-                self.counter += 1
-                self.browser.get(person)
-                time.sleep(5)
-                stor = '//*[@id="react-root"]/section/main/div/div[3]'
-                if self.find_element(stor) == 1:
-                    self.browser.find_element_by_xpath(
-                        '//*[@id="react-root"]/section/main/div/div[3]/article/div/div/div[1]/div[1]').click()
-                else:
-                    self.browser.find_element_by_xpath(
-                        '//*[@id="react-root"]/section/main/div/div[2]/article/div/div/div[1]/div[1]').click()
-                time.sleep(3)
-                self.browser.find_element_by_xpath(
-                    '/html/body/div[4]/div[2]/div/article/header/div[2]/div[1]/div[2]/button').click()
-                self.browser.find_element_by_xpath(
-                    '/html/body/div[4]/div[2]/div/article/div[3]/section[1]/span[1]/button').click()
-                time.sleep(2)
-                self.del_subed()
-                if self.counter % self.lim == 0:
-                    self.browser.close()
-                    time.sleep(3600)
-                    self.login()
-                    # time.sleep(3600)
+        time.sleep(2)
+        stor = '//*[@id="react-root"]/section/main/div/div[3]'
+        if self.find_element(stor) == 1:
+            self.browser.find_element_by_xpath(
+                '//*[@id="react-root"]/section/main/div/div[3]/article/div/div/div[1]/div[1]').click()
+        else:
+            self.browser.find_element_by_xpath(
+                '//*[@id="react-root"]/section/main/div/div[2]/article/div/div/div[1]/div[1]').click()
+        time.sleep(3)
+        self.browser.find_element_by_xpath(
+            '/html/body/div[4]/div[2]/div/article/header/div[2]/div[1]/div[2]/button').click()
+        self.browser.find_element_by_xpath(
+            '/html/body/div[4]/div[2]/div/article/div[3]/section[1]/span[1]/button').click()
+        time.sleep(2)
+        self.counter += 1
+        if self.counter % self.lim == 0:
+            self.browser.close()
+            time.sleep(3600)
+            self.login()
+            # time.sleep(3600)
 
 
 file_sub = input('enter parsed file with subs: ')
 choise = int(input(
     "To choose Zayka enter 1: \nTo choose Blank enter 2: \nTo choose Drop enter 3: \nTo choose your account enter 4: "))
-crush = int(input('Restart after crush? '))
-number_of_users = int(input('Enter amount of users: '))
+number_of_users = int(input('Enter amount of users per hour: '))
 error = "/\/\/\/ Error : 1 /\/\/\/"
 passw = ''
 login = ''
@@ -180,13 +169,6 @@ elif choise == 4:
 else:
     print(error)
 account = Subscribe(number_of_users, file_sub, login, passw)
-if crush == 1:
-    account.subs()
-elif crush == 0:
-    account.login()
-    account.read_from_file()
-    account.filter_person()
-    account.write_filtered()
-    account.subs()
-else:
-    print(error)
+account.login()
+account.read_from_file()
+account.filter_person()
