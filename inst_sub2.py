@@ -96,6 +96,7 @@ class Subscribe:
                 filtered += 1
                 self.filtered_persons.append(person)
                 print(str(count_pers) + ") Added  " + str(filtered))
+                
             if filtered == self.lim * 24:
                 break
         return self.filtered_persons
@@ -118,49 +119,74 @@ class Subscribe:
         temp = []
         for line in self.file:
             temp.append(line)
-        count = 0
         self.file.close()
+        count = 0
         self.file = open(self.log + '.txt', 'w')
-        for i in temp:
+        for url in temp:
             count += 1
-            if count >= self.counter:
-                self.file.write(i)
-                # self.file.write('\n')
+            if count > 1:
+                self.file.write(url)
         self.file.close()
 
     def subs(self):
-        self.counter = 0
-        self.file = open(self.log + '.txt', 'r')
-
-        for person in self.file:
-            self.counter += 1
-            self.browser.get(person)
-            time.sleep(5)
-            stor = '//*[@id="react-root"]/section/main/div/div[3]'
-            if self.find_element(stor) == 1:
+        while True:
+            self.counter = 0
+            self.file = open(self.log + '.txt', 'r')
+            for person in self.file:
+                self.counter += 1
+                self.browser.get(person)
+                time.sleep(5)
+                stor = '//*[@id="react-root"]/section/main/div/div[3]'
+                if self.find_element(stor) == 1:
+                    self.browser.find_element_by_xpath(
+                        '//*[@id="react-root"]/section/main/div/div[3]/article/div/div/div[1]/div[1]').click()
+                else:
+                    self.browser.find_element_by_xpath(
+                        '//*[@id="react-root"]/section/main/div/div[2]/article/div/div/div[1]/div[1]').click()
+                time.sleep(3)
                 self.browser.find_element_by_xpath(
-                    '//*[@id="react-root"]/section/main/div/div[3]/article/div/div/div[1]/div[1]').click()
-            else:
+                    '/html/body/div[4]/div[2]/div/article/header/div[2]/div[1]/div[2]/button').click()
                 self.browser.find_element_by_xpath(
-                    '//*[@id="react-root"]/section/main/div/div[2]/article/div/div/div[1]/div[1]').click()
-            time.sleep(3)
-            self.browser.find_element_by_xpath(
-                '/html/body/div[4]/div[2]/div/article/header/div[2]/div[1]/div[2]/button').click()
-            self.browser.find_element_by_xpath(
-                '/html/body/div[4]/div[2]/div/article/div[3]/section[1]/span[1]/button').click()
-            time.sleep(2)
-            if self.counter == self.lim:
+                    '/html/body/div[4]/div[2]/div/article/div[3]/section[1]/span[1]/button').click()
+                time.sleep(2)
                 self.del_subed()
-                self.browser.close()
-                time.sleep(30)
-                self.login()
-                # time.sleep(3600)
+                if self.counter % self.lim == 0:
+                    self.browser.close()
+                    time.sleep(3600)
+                    self.login()
+                    # time.sleep(3600)
 
 
-yourzayka = Subscribe(5, 'D:\Programming\instagram\subs\\anime.txt', '__yourzayka', '55555dan')
-yourzayka.login()
-yourzayka.read_from_file()
-yourzayka.filter_person()
-yourzayka.write_filtered()
-
-yourzayka.subs()
+file_sub = input('enter parsed file with subs: ')
+choise = int(input(
+    "To choose Zayka enter 1: \nTo choose Blank enter 2: \nTo choose Drop enter 3: \nTo choose your account enter 4: "))
+crush = int(input('Restart after crush? '))
+number_of_users = int(input('Enter amount of users: '))
+error = "/\/\/\/ Error : 1 /\/\/\/"
+passw = ''
+login = ''
+if choise == 1:
+    login = '__yourzayka'
+    passw = '55555dan'
+elif choise == 2:
+    login = '_._.b.l.a.n.k.__'
+    passw = '55555dan'
+elif choise == 3:
+    login = '____drop1'
+    passw = 'Yez7k5D7'
+elif choise == 4:
+    login = input('Enter login: ')
+    passw = input('Enter password: ')
+else:
+    print(error)
+account = Subscribe(number_of_users, file_sub, login, passw)
+if crush == 1:
+    account.subs()
+elif crush == 0:
+    account.login()
+    account.read_from_file()
+    account.filter_person()
+    account.write_filtered()
+    account.subs()
+else:
+    print(error)
