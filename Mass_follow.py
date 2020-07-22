@@ -2,12 +2,18 @@ from selenium import webdriver
 import time
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import StaleElementReferenceException
+from tkinter import filedialog as fd
+from tkinter import Tk
 import re
 
 
 class Parse_follow:
     def __init__(self, LOGIN, PASS, link, quantity):
-        self.browser = webdriver.Chrome("D:\Programming\instagram\chromedriver.exe")
+        self.root = Tk()
+        self.webdriver_path = fd.askopenfilename()
+        self.file_parse_path = fd.askdirectory()
+        self.root.destroy()
+        self.browser = webdriver.Chrome(self.webdriver_path)
         self.pers = []
         self.link = link
         self.tag = link.split('/')[3]
@@ -18,6 +24,7 @@ class Parse_follow:
         self.t_log = 3
 
     def logging(self):
+
         self.browser.get("https://www.instagram.com/")
         self.browser.get("https://www.instagram.com/accounts/login/")
         time.sleep(self.t_log)
@@ -65,7 +72,7 @@ class Parse_follow:
                 self.pers.append(str(persons[j].get_attribute('href')))
 
     def write_file(self):
-        file = open(r"D:\Programming\instagram\subs\{}.txt".format(self.tag), "w")
+        file = open(r"{0}\{1}.txt".format(self.file_parse_path, self.tag), "w")
         for person in self.pers:
             file.write(person)
             file.write("\n")
@@ -75,9 +82,13 @@ class Parse_follow:
 
 
 class Subscribe:
-    def __init__(self, limit_hour, file_sub, login, passw):
+    def __init__(self, limit_hour, login, passw):
+        self.root = Tk()
+        self.webdriver_path = fd.askopenfilename()
+        self.file_sub_path = fd.askopenfilename()
+        self.root.destroy()
         self.lim = limit_hour
-        self.file_parse = file_sub
+        self.file_parse = self.file_sub_path
         self.log = login
         self.passwd = passw
         self.counter = 0
@@ -92,7 +103,7 @@ class Subscribe:
         return existence
 
     def login(self):
-        self.browser = webdriver.Chrome("D:\Programming\instagram\chromedriver.exe")
+        self.browser = webdriver.Chrome(self.webdriver_path)
         time.sleep(2)
         self.browser.get("https://www.instagram.com/")
         self.browser.get("https://www.instagram.com/accounts/login/")
@@ -199,9 +210,13 @@ class Subscribe:
 
 class Parse_unfollow:
     def __init__(self, login, passw, quant):
+        self.root = Tk()
+        self.webdriver_path = fd.askopenfilename()
+        self.file_parse_path = fd.askdirectory()
+        self.root.destroy()
+        self.browser = webdriver.Chrome(self.webdriver_path)
         self.log = login
         self.passwd = passw
-        self.browser = webdriver.Chrome("D:\Programming\instagram\chromedriver.exe")
         self.t_min = 1
         self.t_log = 3
         self.t_scroll = 0.8
@@ -258,7 +273,7 @@ class Parse_unfollow:
                 self.pers.append(str(self.persons[j].get_attribute('href')))
 
     def writing(self):
-        file = open(r"D:\Programming\instagram\unsub\{}_unfollow.txt".format(self.log), "w")
+        file = open(r"{0}\{1}_unfollow.txt".format(self.file_parse_path,self.log), "w")
         for person in self.pers:
             file.write(person)
             file.write("\n")
@@ -268,9 +283,13 @@ class Parse_unfollow:
 
 
 class Unfollow:
-    def __init__(self, limit_hour, file_unsub, login, passw):
+    def __init__(self, limit_hour, login, passw):
+        self.root = Tk()
+        self.webdriver_path = fd.askopenfilename()
+        self.file_unsub_path = fd.askopenfilename()
+        self.root.destroy()
         self.lim = limit_hour
-        self.file_parse = file_unsub
+        self.file_parse = self.file_unsub_path
         self.log = login
         self.passwd = passw
         self.counter = 0
@@ -282,7 +301,7 @@ class Unfollow:
         self.t_unsub = 2
 
     def login(self):
-        self.browser = webdriver.Chrome("D:\Programming\instagram\chromedriver.exe")
+        self.browser = webdriver.Chrome(self.webdriver_path)
         self.browser.get(self.insta)
         self.browser.get(self.insta_log)
         time.sleep(self.t_log)
@@ -337,37 +356,26 @@ class Unfollow:
 choise = int(input(
     "To choose subscribers enter 1: \nTo choose parse subscribe enter 2: \n"
     "To choose unfollow enter 3: \nTo choose parse unfollow enter 4: \n\n"))
-choise_account = int(input(
-    "To choose Zayka enter 1: \nTo choose __henta4__ enter 2: \n"
-    "To choose Drop enter 3: \nTo choose your account enter 4: \n\n"))
+
 error = "/\/\/\/ Error : 1 /\/\/\/"
-passw = ''
-login = ''
-if choise_account == 1:
-    login = '__yourzayka'
-    passw = '55555dan'
-elif choise_account == 2:
-    login = '__henta4__'
-    passw = '55555dan'
-elif choise_account == 3:
-    login = '____drop1'
-    passw = 'Yez7k5D7'
-elif choise_account == 4:
-    login = input('Enter login: ')
-    passw = input('Enter password: ')
-else:
-    print(error)
+
+login = input('Enter login: ')
+passw = input('Enter password: ')
+
 
 if choise == 1:
     number_of_users = int(input('Enter amount of users per hour: '))
-    file_sub = input('Enter parsed file with subs: ')
-    sub = Subscribe(number_of_users, file_sub, login, passw)
+    print("Choose file webdriver path\n")
+    print("Choose file sub path\n")
+    sub = Subscribe(number_of_users, login, passw)
     sub.login()
     sub.read_from_file()
     sub.filter_person()
 elif choise == 2:
     number_of_parse_users = int(input('Enter amount of users to parse: '))
     link = input('Enter link on public: ')
+    print("Choose file webdriver path\n")
+    print("Choose folder sub path\n")
     parse_follow = Parse_follow(login, passw, link, number_of_parse_users)
     parse_follow.logging()
     parse_follow.scroll_prep()
@@ -375,13 +383,16 @@ elif choise == 2:
     parse_follow.write_file()
 elif choise == 3:
     number_of_users = int(input('Enter amount of users per hour: '))
-    file_unsub = input('Enter parsed file with subs: ')
-    unfollow = Unfollow(number_of_users, file_unsub, login, passw)
+    print("Choose file webdriver path\n")
+    print("Choose file unsub path\n")
+    unfollow = Unfollow(number_of_users, login, passw)
     unfollow.login()
     unfollow.read_from_file()
     unfollow.unsub()
 elif choise == 4:
     number_of_parse_users = int(input('Enter amount of users to parse: '))
+    print("Choose file webdriver path\n")
+    print("Choose folser unsub path\n")
     parse_unfollow = Parse_unfollow(login, passw, number_of_parse_users)
     parse_unfollow.login()
     parse_unfollow.scroll_prep()
