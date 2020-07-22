@@ -69,6 +69,7 @@ class Parse_follow:
         for person in self.pers:
             file.write(person)
             file.write("\n")
+        self.browser.close()
         file.close()
         print('/\/\/\/\/\/\/\/\\')
 
@@ -315,7 +316,7 @@ class Unfollow:
             self.del_unsubed()
             if self.counter % self.lim == 0:
                 self.browser.close()
-                time.sleep(20)
+                time.sleep(3500)
                 self.login()
 
     def del_unsubed(self):
@@ -337,7 +338,7 @@ choise = int(input(
     "To choose subscribers enter 1: \nTo choose parse subscribe enter 2: \n"
     "To choose unfollow enter 3: \nTo choose parse unfollow enter 4: \n\n"))
 choise_account = int(input(
-    "To choose Zayka enter 1: \nTo choose Blank enter 2: \n"
+    "To choose Zayka enter 1: \nTo choose __henta4__ enter 2: \n"
     "To choose Drop enter 3: \nTo choose your account enter 4: \n\n"))
 error = "/\/\/\/ Error : 1 /\/\/\/"
 passw = ''
@@ -346,7 +347,7 @@ if choise_account == 1:
     login = '__yourzayka'
     passw = '55555dan'
 elif choise_account == 2:
-    login = '_._.b.l.a.n.k.__'
+    login = '__henta4__'
     passw = '55555dan'
 elif choise_account == 3:
     login = '____drop1'
