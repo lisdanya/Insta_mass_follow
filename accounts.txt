@@ -1,0 +1,22 @@
+1
+login = '__yourzayka'
+passw = '55555dan'
+2
+login = '__henta4__'
+passw = '55555dan'
+3
+login = 'anime4fun___'
+passw = 'Yez7k5D7'
+4
+login = 'computer_accessories.ua'
+passw = 'Yez7k5D7'
+5
+login = 'youth_clothes.ua'
+passw = 'Yez7k5D7'
+6
+login = 'pc_brazzers'
+passw = 'NisanGTR2015'
+7
+login = 'zp.moto_mania.ua'
+passw = 'Yez04k5D11'
+
